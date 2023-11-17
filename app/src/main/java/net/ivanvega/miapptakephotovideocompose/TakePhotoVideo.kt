@@ -44,6 +44,9 @@ fun ImagePicker(
     var hasImage by remember {
         mutableStateOf(false)
     }
+    var hasVideo by remember {
+        mutableStateOf(false)
+    }
     // 2
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
@@ -69,7 +72,7 @@ fun ImagePicker(
     val videoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CaptureVideo(),
         onResult = { success ->
-            hasImage = success
+            hasVideo = success
         }
     )
 
@@ -79,20 +82,25 @@ fun ImagePicker(
         modifier = modifier,
     ) {
         // 4
-        if (hasImage && imageUri != null) {
+        if ((hasImage or hasVideo) && imageUri != null) {
             // 5
+            if(hasImage){
             AsyncImage(
                 model = imageUri,
                 modifier = Modifier.fillMaxWidth(),
                 contentDescription = "Selected image",
             )
+            }
+            if(hasVideo) {VideoPlayer(videoUri = imageUri!!)}
         }
+
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+
             Button(
                 onClick = { imagePicker.launch("image/*") },
             ) {
@@ -111,12 +119,23 @@ fun ImagePicker(
                     text = "Take photo"
                 )
             }
+            Button(
+                modifier = Modifier.padding(top = 16.dp),
+                onClick = {
+                    val uri = ComposeFileProvider.getImageUri(context)
+                    imageUri = uri
+                    videoLauncher.launch(uri) },
+            ) {
+                Text(
+                    text = "Take video"
+                )
+            }
         }
     }
 }
-/**
+
 @Composable
-fun VideoPlayer(videoUri: Uri) {
+fun VideoPlayer(videoUri: Uri, modifier: Modifier = Modifier.fillMaxWidth()) {
     val context = LocalContext.current
     val exoPlayer = remember {
         SimpleExoPlayer.Builder(context).build().apply {
@@ -124,7 +143,7 @@ fun VideoPlayer(videoUri: Uri) {
             prepare()
         }
     }
-    val playbackState by exoPlayer.rememberPlaybackState()
+    val playbackState = exoPlayer
     val isPlaying = playbackState?.isPlaying ?: false
 
     AndroidView(
@@ -133,7 +152,7 @@ fun VideoPlayer(videoUri: Uri) {
                 player = exoPlayer
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     )
 
     IconButton(
@@ -156,4 +175,3 @@ fun VideoPlayer(videoUri: Uri) {
         )
     }
 }
-**/
