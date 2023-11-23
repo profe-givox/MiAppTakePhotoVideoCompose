@@ -10,17 +10,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.net.toFile
+
 import net.ivanvega.miapptakephotovideocompose.ui.theme.MiAppTakePhotoVideoComposeTheme
 import java.io.File
+import java.net.URI
 
 class MainActivity : ComponentActivity() {
 
     private val recorder by lazy {
         AndroidAudioRecorder(applicationContext)
     }
+
+    private val player by lazy {
+        AndroidAudioPlayer(applicationContext)
+    }
+
+    private var audioFile: File? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val uri = ComposeFileProvider.getImageUri(applicationContext)
         setContent {
             MiAppTakePhotoVideoComposeTheme {
                 // A surface container using the 'background' color from the theme
@@ -29,11 +37,21 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     //ImagePicker()
-                    /*val uri = ComposeFileProvider.getImageUri(applicationContext)
-                    val fi = uri.toFile()*/
-                    GrabarAudioScreen(onClickStGra = {
-                        recorder.start(ComposeFileProvider.getImageUri(applicationContext).toFile())
-                    }, onClickSpGra = {recorder.stop()})
+
+                    //val fi = uri.toFile()
+                    GrabarAudioScreen(
+                        onClickStGra = {
+                            File(cacheDir, "audio.mp3").also {
+                                recorder.start(it)
+                                audioFile = it
+                            }
+
+                        },
+                        onClickSpGra = {recorder.stop()},
+                        onClickStRe = { audioFile?.let { player.start(it) } },
+                        onClickSpRe = {player.stop()}
+
+                    )
                 }
             }
         }

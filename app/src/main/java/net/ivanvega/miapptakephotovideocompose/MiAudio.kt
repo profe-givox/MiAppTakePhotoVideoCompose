@@ -2,6 +2,7 @@ package net.ivanvega.miapptakephotovideocompose
 
 import android.Manifest
 import android.content.Context
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Build
 import androidx.compose.animation.animateContentSize
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -44,7 +46,9 @@ import java.io.FileOutputStream
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun GrabarAudioScreen( onClickStGra: () -> Unit,
-                       onClickSpGra: () -> Unit,){
+                       onClickSpGra: () -> Unit,
+                       onClickStRe: () -> Unit,
+                       onClickSpRe: () -> Unit,){
     val context = LocalContext.current
 
     val recordAudioPermissionState = rememberPermissionState(
@@ -79,6 +83,8 @@ fun GrabarAudioScreen( onClickStGra: () -> Unit,
                 title = stringResource(R.string.record_audio),
                 onClickStGra,
                 onClickSpGra,
+                onClickStRe,
+                onClickStRe
             ) {
                 if (recordAudioPermissionState.status.shouldShowRationale) {
                     rationaleState = RationaleState(
@@ -104,6 +110,8 @@ fun GrabarAudioScreen( onClickStGra: () -> Unit,
 fun PermissionRequestButton(isGranted: Boolean, title: String,
                             onClickStGra: () -> Unit,
                             onClickSpGra: () -> Unit,
+                            onClickStRe: () -> Unit,
+                            onClickSpRe: () -> Unit,
                             onClick: () -> Unit) {
     if (isGranted) {
         Row(
@@ -116,11 +124,20 @@ fun PermissionRequestButton(isGranted: Boolean, title: String,
             Spacer(Modifier.size(10.dp))
             Text(text = title, modifier = Modifier.background(Color.Transparent))
             Spacer(Modifier.size(10.dp))
+
+        }
+        Column {
             Button(onClick = onClickStGra) {
                 Text("Iniciar Grabar")
             }
             Button(onClick = onClickSpGra) {
-                Text("Iniciar parar")
+                Text("Parar Grabar")
+            }
+            Button(onClick = onClickStRe) {
+                Text("Iniciar reproducri")
+            }
+            Button(onClick = onClickSpRe) {
+                Text("Parar reproducir")
             }
         }
     } else {
@@ -195,6 +212,27 @@ class AndroidAudioRecorder(
         recorder?.stop()
         recorder?.reset()
         recorder = null
+    }
+}
+
+class AndroidAudioPlayer(
+    private val context: Context
+): AudioRecorder {
+
+    private var player: MediaPlayer? = null
+
+
+    override fun start(outputFile: File) {
+        MediaPlayer.create(context, outputFile.toUri()).apply {
+            player = this
+            start()
+        }
+    }
+
+    override fun stop() {
+        player?.stop()
+        player?.release()
+        player = null
     }
 }
 
