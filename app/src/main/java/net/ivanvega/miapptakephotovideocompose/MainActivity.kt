@@ -1,5 +1,6 @@
 package net.ivanvega.miapptakephotovideocompose
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,10 +11,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import net.ivanvega.miapptakephotovideocompose.alarmas.AlarmItem
+import net.ivanvega.miapptakephotovideocompose.alarmas.AlarmSchedulerImpl
+import net.ivanvega.miapptakephotovideocompose.alarmas.AlarmasScreen
 
 import net.ivanvega.miapptakephotovideocompose.ui.theme.MiAppTakePhotoVideoComposeTheme
 import java.io.File
 import java.net.URI
+import java.time.LocalDateTime
 
 class MainActivity : ComponentActivity() {
 
@@ -36,10 +41,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        AlarmasScreen(
+                            alarmScheduler = AlarmSchedulerImpl(applicationContext))
+                    }
                     //ImagePicker()
-
-                    //val fi = uri.toFile()
-                    GrabarAudioScreen(
+                    /*GrabarAudioScreen(
                         onClickStGra = {
                             File(cacheDir, "audio.mp3").also {
                                 recorder.start(it)
@@ -50,8 +57,7 @@ class MainActivity : ComponentActivity() {
                         onClickSpGra = {recorder.stop()},
                         onClickStRe = { audioFile?.let { player.start(it) } },
                         onClickSpRe = {player.stop()}
-
-                    )
+                    )*/
                 }
             }
         }
