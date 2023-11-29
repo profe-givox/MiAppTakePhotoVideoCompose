@@ -1,6 +1,7 @@
 package net.ivanvega.miapptakephotovideocompose
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -34,12 +35,13 @@ import coil.compose.AsyncImage
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
+import kotlinx.coroutines.time.withTimeoutOrNull
 
 @Composable
 fun ImagePicker(
     modifier: Modifier = Modifier,
 ) {
-
+    var uri : Uri? = null
     // 1
     var hasImage by remember {
         mutableStateOf(false)
@@ -51,6 +53,7 @@ fun ImagePicker(
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
+
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -65,6 +68,9 @@ fun ImagePicker(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
+            Log.d("IMG", hasImage.toString())
+            Log.d("URI", imageUri.toString())
+            if(success) imageUri = uri
             hasImage = success
         }
     )
@@ -111,8 +117,8 @@ fun ImagePicker(
             Button(
                 modifier = Modifier.padding(top = 16.dp),
                 onClick = {
-                    val uri = ComposeFileProvider.getImageUri(context)
-                    imageUri = uri
+                    uri = ComposeFileProvider.getImageUri(context)
+                    //imageUri = uri
                     cameraLauncher.launch(uri) },
             ) {
                 Text(
@@ -123,9 +129,11 @@ fun ImagePicker(
                 modifier = Modifier.padding(top = 16.dp),
                 onClick = {
                     val uri = ComposeFileProvider.getImageUri(context)
+                    videoLauncher.launch(uri)
                     imageUri = uri
-                    videoLauncher.launch(uri) },
+                          },
             ) {
+
                 Text(
                     text = "Take video"
                 )
