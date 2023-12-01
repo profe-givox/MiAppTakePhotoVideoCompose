@@ -42,10 +42,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        AlarmasScreen(
-                            alarmScheduler = AlarmSchedulerImpl(applicationContext))
+//                        AlarmasScreen(
+//                            alarmScheduler = AlarmSchedulerImpl(applicationContext))
                     }
-                    //ImagePicker()
+                    ImagePicker()
                     /*GrabarAudioScreen(
                         onClickStGra = {
                             File(cacheDir, "audio.mp3").also {
