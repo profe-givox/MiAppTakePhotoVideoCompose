@@ -84,7 +84,7 @@ fun GrabarAudioScreen( onClickStGra: () -> Unit,
                 onClickStGra,
                 onClickSpGra,
                 onClickStRe,
-                onClickStRe
+                onClickSpRe
             ) {
                 if (recordAudioPermissionState.status.shouldShowRationale) {
                     rationaleState = RationaleState(

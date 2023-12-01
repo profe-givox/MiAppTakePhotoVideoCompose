@@ -1,5 +1,6 @@
 package net.ivanvega.miapptakephotovideocompose.alarmas
 
+import android.Manifest
 import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -31,14 +32,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import net.ivanvega.miapptakephotovideocompose.R
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AlarmasScreen( alarmScheduler: AlarmScheduler){
+
+    val recordAudioPermissionState = rememberPermissionState(
+        Manifest.permission.POST_NOTIFICATIONS
+    )
+
     var secondText by remember {
         mutableStateOf("")
     }
